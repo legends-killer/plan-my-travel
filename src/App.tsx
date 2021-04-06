@@ -1,20 +1,22 @@
-import React from 'react'
-import { Route, Switch, Link } from 'react-router-dom'
+import Nav from './components/navbar'
+import { Route, Switch } from 'react-router-dom'
 import Home from './pages/home'
 import About from './pages/About'
+import './App.less'
 
 function App() {
   return (
-    <main>
-      <div>
-        <Link to="/">Home </Link>
-        <Link to="/about">About Us </Link>
+    <main className="main">
+      <div className="nav">
+        <Nav />
       </div>
-      <Switch>
-        <Route path="/" component={Home} exact />
-        <Route path="/about" component={About} />
-        <Route component={Home} />
-      </Switch>
+      <div className="content">
+        <Switch>
+          <Route path="/" component={Home} exact />
+          <Route path="/about" component={About} />
+          <Route component={Home} />
+        </Switch>
+      </div>
     </main>
   )
 }
