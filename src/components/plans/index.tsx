@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { planListIF, planDetailPropsIF, planColumnPropsIF } from './types'
 import {
   DragDropContext,
   Droppable,
@@ -10,77 +11,57 @@ import {
 import update from 'immutability-helper'
 import './style.less'
 
-interface initialDataInferface {
-  id: number
-  name: string
-  issues: {
-    id: number
-    name: string
-  }[]
-}
-
-interface ColumnProps {
-  columnIndex: number
-  column: initialDataInferface
-}
-
-interface IssueProps {
-  id: number
-  issueIndex: number
-  name: string
-}
-
-const InitialData: initialDataInferface[] = [
+const InitialData: planListIF[] = [
   {
     id: 100,
-    name: 'todo',
-    issues: [
-      { id: 1, name: '吃饭' },
-      { id: 2, name: '睡觉' },
-      { id: 3, name: '打豆豆' },
+    title: 'day1',
+    details: [
+      { id: 1, place: ['A'] },
+      { id: 2, place: ['B'] },
+      { id: 3, place: ['A', 'B'] },
     ],
   },
   {
     id: 200,
-    name: 'doing',
-    issues: [
-      { id: 4, name: '删库' },
-      { id: 5, name: '跑路' },
+    title: 'day2',
+    details: [
+      { id: 4, place: ['C'] },
+      { id: 5, place: ['D'] },
     ],
   },
   {
     id: 300,
-    name: 'done',
-    issues: [],
+    title: 'day3',
+    details: [],
   },
 ]
 
-const Issue = (props: IssueProps) => {
-  const { id, issueIndex, name } = props
+const Detail = (props: planDetailPropsIF) => {
+  const { id, detailIndex, detail } = props
 
   return (
-    <Draggable draggableId={`${id}`} index={issueIndex}>
+    <Draggable draggableId={`${id}`} index={detailIndex}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
         <div
           ref={provided.innerRef}
-          className={snapshot.isDragging ? 'issueDragging' : 'issue'}
+          className={snapshot.isDragging ? 'detailDragging' : 'detail'}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          {name}
+          {detail.place}
         </div>
       )}
     </Draggable>
   )
 }
 
-const Column = (props: ColumnProps) => {
+const Column = (props: planColumnPropsIF) => {
   const { columnIndex, column } = props
-  const { issues } = column
+  const { details } = column
   return (
     <div className={'column'}>
       <div className={'columnTitle'}>
-        {column.name}({column.issues.length})
+        {column.title}({column.details.length})
       </div>
       <Droppable droppableId={`${columnIndex}`}>
         {(provided, snapshot) => (
@@ -91,12 +72,12 @@ const Column = (props: ColumnProps) => {
             }
             {...provided.droppableProps}
           >
-            {issues.map((issue, index) => (
-              <Issue
-                key={issue.id}
-                issueIndex={index}
-                id={issue.id}
-                name={issue.name}
+            {details.map((detail, index) => (
+              <Detail
+                key={detail.id}
+                detailIndex={index}
+                id={detail.id}
+                detail={detail}
               />
             ))}
             {provided.placeholder}
@@ -121,13 +102,12 @@ export default () => {
     const fromIssueIndex = source.index
     const toColumnIndex = Number(destination.droppableId)
     const toIssueIndex = destination.index
-
-    const TempIssue = data[fromColumnIndex].issues[fromIssueIndex]
+    const TempIssue = data[fromColumnIndex].details[fromIssueIndex]
 
     let TempData = update(data, {
       [fromColumnIndex]: {
-        issues: (issues) =>
-          update(issues, {
+        details: (details) =>
+          update(details, {
             $splice: [[fromIssueIndex, 1]],
           }),
       },
@@ -135,8 +115,8 @@ export default () => {
 
     TempData = update(TempData, {
       [toColumnIndex]: {
-        issues: (issues) =>
-          update(issues, {
+        details: (details) =>
+          update(details, {
             $splice: [[toIssueIndex, 0, TempIssue]],
           }),
       },
