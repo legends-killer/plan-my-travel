@@ -107,7 +107,8 @@ const Column = (props: ColumnProps) => {
   )
 }
 
-export default function Home() {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default () => {
   const [data, setData] = useState(InitialData)
 
   const onDragEnd = (result: DropResult) => {
