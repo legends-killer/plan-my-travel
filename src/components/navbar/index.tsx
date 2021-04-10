@@ -1,6 +1,6 @@
 import { useState, createElement } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, Button } from 'antd'
+import { Menu, Button, Layout } from 'antd'
 import {
   AppstoreOutlined,
   MenuUnfoldOutlined,
@@ -21,7 +21,7 @@ export default () => {
   }
 
   return (
-    <div>
+    <Layout>
       <Button
         type="primary"
         className="dark:bg-gray-800"
@@ -64,6 +64,6 @@ export default () => {
           </SubMenu>
         </SubMenu>
       </Menu>
-    </div>
+    </Layout>
   )
 }

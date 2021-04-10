@@ -1,14 +1,9 @@
 import React, { useState } from 'react'
-import { planListIF, planDetailPropsIF, planColumnPropsIF } from './types'
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-  DraggableProvided,
-  DraggableStateSnapshot,
-} from 'react-beautiful-dnd'
+import { planListIF, planDetailPropsIF, planDetailIF } from './types'
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import update from 'immutability-helper'
+import Column from './column'
+import Detail from './detail'
 import { Input } from 'antd'
 import './style.less'
 
@@ -36,87 +31,17 @@ const InitialData: planListIF[] = [
     details: [],
   },
 ]
+const InitialList: planDetailPropsIF[] = []
 
-const Detail = (props: planDetailPropsIF) => {
-  const { id, detailIndex, detail } = props
-
-  return (
-    <Draggable draggableId={`${id}`} index={detailIndex}>
-      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
-        <div
-          ref={provided.innerRef}
-          className={` ${
-            snapshot.isDragging ? 'detailDragging' : 'detail'
-          } panel `}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <div className="cardpanel">
-            <div className="card">
-              <div className="picture">
-                {detail.place}
-                <div className="glass" />
-              </div>
-              <div className="title"></div>
-            </div>
-            <div className="labelpart">
-              <p>Label</p>
-            </div>
-          </div>
-          {/* <Input placeholder={detail.actType} bordered={false} /> */}
-        </div>
-      )}
-    </Draggable>
-  )
-}
-
-const Column = (props: planColumnPropsIF) => {
-  const { columnIndex, column } = props
-  const { details, id } = column
-  return (
-    <Draggable draggableId={`${id}`} index={columnIndex}>
-      {(provided) => (
-        <div
-          className={'column'}
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-        >
-          <div className={'columnTitle'} {...provided.dragHandleProps}>
-            {column.title}
-            {column.id}({column.details.length})
-          </div>
-          <Droppable droppableId={`${columnIndex}`} type="row">
-            {(provided, snapshot) => (
-              <div
-                ref={provided.innerRef}
-                className={
-                  snapshot.isDraggingOver
-                    ? 'columnContentActive'
-                    : 'columnContent'
-                }
-                {...provided.droppableProps}
-              >
-                {details.map((detail, index) => (
-                  <Detail
-                    key={detail.id}
-                    detailIndex={index}
-                    id={detail.id}
-                    detail={detail}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      )}
-    </Draggable>
-  )
+interface IProps {
+  pubList: planDetailIF[]
+  updateList: (newList: planDetailIF[]) => void
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default () => {
+export default (props: IProps) => {
   const [data, setData] = useState(InitialData)
+  const { pubList, updateList } = props
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, type } = result
@@ -174,6 +99,23 @@ export default () => {
             {data.map((column, index) => {
               return (
                 <Column columnIndex={index} key={column.id} column={column} />
+              )
+            })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+      <Droppable droppableId="pub-list" type="list" direction="horizontal">
+        {(provided) => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            {pubList.map((item, index) => {
+              return (
+                <Detail
+                  detail={item}
+                  key={index}
+                  detailIndex={index}
+                  id={item.id}
+                />
               )
             })}
             {provided.placeholder}
