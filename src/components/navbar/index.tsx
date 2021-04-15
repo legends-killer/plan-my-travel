@@ -1,6 +1,6 @@
 import { useState, createElement } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, Button } from 'antd'
+import { Menu, Button, Layout } from 'antd'
 import {
   AppstoreOutlined,
   MenuUnfoldOutlined,
@@ -21,7 +21,7 @@ export default () => {
   }
 
   return (
-    <div>
+    <Layout>
       <Button
         type="primary"
         className="dark:bg-gray-800"
@@ -47,7 +47,7 @@ export default () => {
         </Menu.Item>
 
         <Menu.Item key="3" icon={<ContainerOutlined />}>
-          Option 3
+          <Link to="/map">Option 3</Link>
         </Menu.Item>
         <SubMenu key="sub1" icon={<MailOutlined />} title="Navigation One">
           <Menu.Item key="5">Option 5</Menu.Item>
@@ -64,6 +64,6 @@ export default () => {
           </SubMenu>
         </SubMenu>
       </Menu>
-    </div>
+    </Layout>
   )
 }
