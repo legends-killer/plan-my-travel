@@ -10,6 +10,7 @@ interface IProps {
 
 export default (props: IProps) => {
   const { pubList, updateList } = props
+  console.log(pubList)
   return (
     <main className="main">
       <Plans pubList={pubList} updateList={updateList} />

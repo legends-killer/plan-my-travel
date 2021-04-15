@@ -12,7 +12,7 @@ const InitialData: planListIF[] = [
     id: 100,
     title: 'day1',
     details: [
-      { id: 1, place: ['A'], actType: 'van' },
+      { id: 11, place: ['A'], actType: 'van' },
       { id: 2, place: ['B'] },
       { id: 3, place: ['A', 'B'] },
     ],
@@ -31,7 +31,6 @@ const InitialData: planListIF[] = [
     details: [],
   },
 ]
-const InitialList: planDetailPropsIF[] = []
 
 interface IProps {
   pubList: planDetailIF[]

@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { planDetailIF } from './components/plans/types'
 import Map from './pages/Map'
 
-const InitialPubLists = [
+const InitialPubList = [
   {
     id: 1,
     place: ['place'],
@@ -16,7 +16,7 @@ const InitialPubLists = [
 ] as planDetailIF[]
 
 function App() {
-  const [pubList, setPubList] = useState(InitialPubLists)
+  const [pubList, setPubList] = useState(InitialPubList)
   return (
     <main className="main">
       <div className="nav">
