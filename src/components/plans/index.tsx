@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { planListIF, planDetailPropsIF, planDetailIF } from './types'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import update from 'immutability-helper'
 import Column from './column'
 import Detail from './detail'
-import { Input } from 'antd'
+import { Button, Input } from 'antd'
 import './style.less'
 
 const InitialData: planListIF[] = [
@@ -41,6 +41,18 @@ interface IProps {
 export default (props: IProps) => {
   const [data, setData] = useState(InitialData)
   const { pubList, updateList } = props
+  const addNewColumn = useCallback(
+    (id: string | number, title: string) => {
+      data.push({
+        id,
+        title,
+        details: [],
+      } as planListIF)
+      setData(data)
+    },
+    [data]
+  )
+  console.log(data, 'build')
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, type } = result
@@ -100,6 +112,15 @@ export default (props: IProps) => {
                 <Column columnIndex={index} key={column.id} column={column} />
               )
             })}
+            {
+              <Button
+                onClick={() => {
+                  addNewColumn('123', 'aaa')
+                }}
+              >
+                add column
+              </Button>
+            }
             {provided.placeholder}
           </div>
         )}
