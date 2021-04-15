@@ -39,7 +39,7 @@ export default () => {
         inlineCollapsed={collapsed}
       >
         <Menu.Item key="1" icon={<PieChartOutlined />}>
-          <Link to="/home"> Option 1 </Link>
+          <Link to="/plans"> Option 1 </Link>
         </Menu.Item>
 
         <Menu.Item key="2" icon={<DesktopOutlined />}>
