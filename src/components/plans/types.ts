@@ -25,10 +25,12 @@ export interface planColumnPropsIF {
   columnIndex: number
   column: planListIF
   key: number
+  setInColumn: (type: boolean) => void
 }
 
 export interface planDetailPropsIF {
   id: number | string
   detailIndex: number
   detail: planDetailIF
+  setInColumn?: (type: boolean) => void
 }

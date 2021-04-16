@@ -3,7 +3,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd'
 import Detail from './detail'
 
 export default function Column(props: planColumnPropsIF) {
-  const { columnIndex, column } = props
+  const { columnIndex, column, setInColumn } = props
   const { details, id } = column
   return (
     <Draggable draggableId={`${id}`} index={columnIndex}>
@@ -30,6 +30,7 @@ export default function Column(props: planColumnPropsIF) {
               >
                 {details.map((detail, index) => (
                   <Detail
+                    setInColumn={setInColumn}
                     key={detail.id}
                     detailIndex={index}
                     id={detail.id}

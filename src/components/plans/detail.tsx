@@ -6,7 +6,7 @@ import {
 } from 'react-beautiful-dnd'
 
 export default function Detail(props: planDetailPropsIF) {
-  const { id, detailIndex, detail } = props
+  const { id, detailIndex, detail, setInColumn } = props
   return (
     <Draggable draggableId={`${id}`} index={detailIndex}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
@@ -17,6 +17,12 @@ export default function Detail(props: planDetailPropsIF) {
           } panel `}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onMouseEnter={() => {
+            setInColumn && setInColumn(true)
+          }}
+          onMouseLeave={() => {
+            setInColumn && setInColumn(false)
+          }}
         >
           <div className="cardpanel">
             <div className="card">

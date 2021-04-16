@@ -10,6 +10,12 @@ import './style.less'
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
+  const [isInColumn, setIsIncolumn] = useState(false)
+  const [lock, setLock] = useState(false)
+  const setInColumn = (type: boolean) => {
+    console.log(type)
+    setIsIncolumn(type)
+  }
   const { state, dispatch } = useContext(PlanContext)
   const { pubList, columns } = state
   const addNewColumn = (id: number, title: string) => {
@@ -70,12 +76,19 @@ export default () => {
   }
 
   const handleScroll = (e: any) => {
+    if (isInColumn) return
+    if (lock) return
+    setLock(true)
+    setTimeout(() => {
+      setLock(false)
+    }, 300)
+    console.log(e)
     const delta = Math.max(
       -1,
       Math.min(1, e.nativeEvent.wheelDelta || -e.nativeEvent.detail)
     )
-    console.log(e.currentTarget, delta)
-    e.currentTarget.scrollLeft -= delta * 290
+    console.log(e, delta)
+    e.currentTarget.scrollLeft -= delta * 150
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     e.preventDefault
   }
@@ -96,12 +109,13 @@ export default () => {
                     columnIndex={index}
                     key={Number(column.id)}
                     column={column}
+                    setInColumn={setInColumn}
                   />
                 )
               })}
               {
                 <Button
-                  onClick={() => {
+                  onClick={(e) => {
                     addNewColumn(columns[columns.length - 1].id + 1, 'aaa')
                   }}
                 >
