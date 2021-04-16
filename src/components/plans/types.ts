@@ -1,5 +1,5 @@
 export interface planListIF {
-  id: number | string
+  id: number
   title: string //第n天
   getMapLine?: (pos: any) => {} //数组传入当天行程所有的点，返回当天行程的路线
   details: planDetailIF[] //每天的详细内容
