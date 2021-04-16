@@ -8,41 +8,10 @@ import { Button, Input } from 'antd'
 import { PlanContext } from '../../utils'
 import './style.less'
 
-const InitialData: planListIF[] = [
-  {
-    id: 100,
-    title: 'day1',
-    details: [
-      { id: 11, place: ['A'], actType: 'van' },
-      { id: 2, place: ['B'] },
-      { id: 3, place: ['A', 'B'] },
-    ],
-  },
-  {
-    id: 200,
-    title: 'day2',
-    details: [
-      { id: 4, place: ['C'] },
-      { id: 5, place: ['D'] },
-    ],
-  },
-  {
-    id: 300,
-    title: 'day3',
-    details: [],
-  },
-]
-
-// interface IProps {
-//   pubList: planDetailIF[]
-//   updateList: (newList: planDetailIF[]) => void
-// }
-
 // eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
-  const [columns, setColumns] = useState(InitialData)
-  // const { pubList, updateList } = props
-  const { pubList, columns } = PlanContext
+  const { state, dispatch } = useContext(PlanContext)
+  const { pubList, columns } = state
   const addNewColumn = (id: number, title: string) => {
     let TempData = columns
     TempData.push({
@@ -51,9 +20,7 @@ export default () => {
       details: [],
     } as planListIF)
     console.log('add')
-    console.log(columns)
-    setColumns(TempData)
-    console.log(columns)
+    dispatch({ type: 'setColumns', newVal: TempData })
   }
 
   console.log(columns, 'build')
@@ -69,7 +36,7 @@ export default () => {
       let TempData = columns
       var item = TempData.splice(from, 1)
       TempData.splice(to, 0, item[0])
-      setColumns(TempData)
+      dispatch({ type: 'setColumns', newVal: TempData })
     } else if (type === 'row') {
       const fromColumnIndex = Number(source.droppableId)
       const fromIssueIndex = source.index
@@ -97,20 +64,31 @@ export default () => {
         },
       })
 
-      setColumns(TempData)
+      dispatch({ type: 'setColumns', newVal: TempData })
     } else if (type === 'extra') {
     }
   }
 
+  const handleScroll = (e: any) => {
+    const delta = Math.max(
+      -1,
+      Math.min(1, e.nativeEvent.wheelDelta || -e.nativeEvent.detail)
+    )
+    console.log(e.currentTarget, delta)
+    e.currentTarget.scrollLeft -= delta * 290
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    e.preventDefault
+  }
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="outter" type="col" direction="horizontal">
           {(provided) => (
             <div
-              className={'container'}
+              className={'planContainer'}
               {...provided.droppableProps}
               ref={provided.innerRef}
+              onWheel={(e) => handleScroll(e)}
             >
               {columns.map((column, index) => {
                 return (
@@ -136,7 +114,11 @@ export default () => {
         </Droppable>
         <Droppable droppableId="pub-list" type="list" direction="horizontal">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
+            <div
+              className={'pubListContainer'}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
               {pubList.map((item, index) => {
                 return (
                   <Detail

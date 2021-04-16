@@ -6,8 +6,7 @@ import './App.less'
 import { useState, useReducer } from 'react'
 import { planDetailIF, planListIF } from './components/plans/types'
 import Map from './pages/Map'
-import { PlanContext, PlanContextIF } from './utils'
-import { stat } from 'node:fs'
+import { PlanContext, PlanContextIF, reducer } from './utils'
 
 const InitialPubList = [
   {
@@ -16,7 +15,7 @@ const InitialPubList = [
     actType: 'yyy',
   },
 ] as planDetailIF[]
-const InitialData: planListIF[] = [
+const InitialColumns = [
   {
     id: 100,
     title: 'day1',
@@ -39,33 +38,15 @@ const InitialData: planListIF[] = [
     title: 'day3',
     details: [],
   },
-]
-
+] as planListIF[]
 const InitialPlanState = {
   pubList: InitialPubList,
-  columns: InitialData,
+  columns: InitialColumns,
 } as PlanContextIF
-const reducer = (
-  state: PlanContextIF,
-  action: { type: string; newVal: any }
-) => {
-  switch (action.type) {
-    case 'setColumns':
-      return Object.assign({}, state, {
-        columns: action.newVal as planListIF[],
-      })
-    case 'setPubList':
-      return Object.assign({}, state, {
-        pubList: action.newVal as planDetailIF[],
-      })
-    default:
-      return state
-  }
-}
 
 function App() {
-  const [pubList, setPubList] = useState(InitialPubList)
   const [state, dispatch] = useReducer(reducer, InitialPlanState)
+  const planContextProvider = { state, dispatch }
   return (
     <main className="main">
       <div className="nav">
@@ -74,7 +55,7 @@ function App() {
       <div className="content">
         <Switch>
           <Route path="/plans" exact>
-            <PlanContext.Provider value={{ state, dispatch }}>
+            <PlanContext.Provider value={planContextProvider}>
               <Plans />
             </PlanContext.Provider>
           </Route>
