@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useContext } from 'react'
 import { planListIF, planDetailPropsIF, planDetailIF } from './types'
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Droppable,
+  DropResult,
+  DragStart,
+} from 'react-beautiful-dnd'
 import update from 'immutability-helper'
 import Column from './column'
 import Detail from './detail'
@@ -12,6 +17,7 @@ import './style.less'
 export default () => {
   const [isInColumn, setIsIncolumn] = useState(false)
   const [lock, setLock] = useState(false)
+  const [showAddBtn, setShowAddBtn] = useState(true)
   const setInColumn = (type: boolean) => {
     console.log(type)
     setIsIncolumn(type)
@@ -31,7 +37,13 @@ export default () => {
 
   console.log(columns, 'build')
 
+  const ondragstart = (initial: DragStart) => {
+    console.log(initial)
+    setShowAddBtn(false)
+  }
+
   const onDragEnd = (result: DropResult) => {
+    setShowAddBtn(true)
     const { destination, source, type } = result
     if (!destination) {
       return
@@ -94,7 +106,7 @@ export default () => {
   }
   return (
     <>
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={ondragstart}>
         <Droppable droppableId="outter" type="col" direction="horizontal">
           {(provided) => (
             <div
@@ -113,7 +125,8 @@ export default () => {
                   />
                 )
               })}
-              {
+
+              {showAddBtn && (
                 <Button
                   onClick={(e) => {
                     addNewColumn(columns[columns.length - 1].id + 1, 'aaa')
@@ -121,7 +134,7 @@ export default () => {
                 >
                   add
                 </Button>
-              }
+              )}
               {provided.placeholder}
             </div>
           )}
@@ -143,6 +156,7 @@ export default () => {
                   />
                 )
               })}
+
               {provided.placeholder}
             </div>
           )}
