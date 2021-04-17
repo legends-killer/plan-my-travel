@@ -6,6 +6,7 @@ import Column from './column'
 import Detail from './detail'
 import { Button, Input } from 'antd'
 import { PlanContext } from '../../utils'
+import { UserAgentProvider, UserAgent } from '@quentin-sommer/react-useragent'
 import './style.less'
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -75,18 +76,21 @@ export default () => {
     }
   }
 
-  const handleScroll = (e: any) => {
+  const handleScroll = (e: any, parser: any) => {
     if (isInColumn) return
     if (lock) return
+    const os = parser.getOS().name
+    if (os === 'Mac OS') return
     setLock(true)
     setTimeout(() => {
       setLock(false)
     }, 300)
-    console.log(e)
     const delta = Math.max(
       -1,
       Math.min(1, e.nativeEvent.wheelDelta || -e.nativeEvent.detail)
     )
+    console.log(delta)
+    // if (!delta && os === 'Mac OS') return
     console.log(e, delta)
     e.currentTarget.scrollLeft -= delta * 150
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -94,60 +98,69 @@ export default () => {
   }
   return (
     <>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="outter" type="col" direction="horizontal">
-          {(provided) => (
-            <div
-              className={'planContainer'}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              onWheel={(e) => handleScroll(e)}
-            >
-              {columns.map((column, index) => {
-                return (
-                  <Column
-                    columnIndex={index}
-                    key={Number(column.id)}
-                    column={column}
-                    setInColumn={setInColumn}
-                  />
-                )
-              })}
-              {
-                <Button
-                  onClick={(e) => {
-                    addNewColumn(columns[columns.length - 1].id + 1, 'aaa')
-                  }}
-                >
-                  add
-                </Button>
-              }
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-        <Droppable droppableId="pub-list" type="list" direction="horizontal">
-          {(provided) => (
-            <div
-              className={'pubListContainer'}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {pubList.map((item, index) => {
-                return (
-                  <Detail
-                    detail={item}
-                    key={index}
-                    detailIndex={index}
-                    id={item.id}
-                  />
-                )
-              })}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <UserAgentProvider ua={window.navigator.userAgent}>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="outter" type="col" direction="horizontal">
+            {(provided) => (
+              <UserAgent returnFullParser>
+                {(parser: any) => (
+                  <div
+                    className={'planContainer'}
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    onWheel={(e) => handleScroll(e, parser)}
+                  >
+                    {columns.map((column, index) => {
+                      return (
+                        <Column
+                          columnIndex={index}
+                          key={Number(column.id)}
+                          column={column}
+                          setInColumn={setInColumn}
+                        />
+                      )
+                    })}
+                    {
+                      <Button
+                        onClick={(e) => {
+                          addNewColumn(
+                            columns[columns.length - 1].id + 1,
+                            'aaa'
+                          )
+                        }}
+                      >
+                        add
+                      </Button>
+                    }
+                    {provided.placeholder}
+                  </div>
+                )}
+              </UserAgent>
+            )}
+          </Droppable>
+          <Droppable droppableId="pub-list" type="list" direction="horizontal">
+            {(provided) => (
+              <div
+                className={'pubListContainer'}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {pubList.map((item, index) => {
+                  return (
+                    <Detail
+                      detail={item}
+                      key={index}
+                      detailIndex={index}
+                      id={item.id}
+                    />
+                  )
+                })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </UserAgentProvider>
     </>
   )
 }
