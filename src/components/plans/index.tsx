@@ -22,8 +22,6 @@ export default () => {
   const { state, dispatch } = useContext(PlanContext)
   const { pubList, columns, nextPlanId, nextColumnId } = state
 
-  // console.log(columns, 'build')
-
   // 新增一列，删除一列在column组件中进行
   const addNewColumn = (title: string) => {
     let TempData = columns
@@ -44,8 +42,6 @@ export default () => {
   }
   // 结束拖拽
   const onDragEnd = (result: DropResult) => {
-    console.log(pubList)
-    setShowAddBtn(true)
     const { destination, source, type } = result
     if (!destination) {
       return
@@ -109,14 +105,9 @@ export default () => {
         const item = TempData[fromColumnId].details[fromColumnIndex]
         TempData[fromColumnId].details.splice(fromColumnIndex, 1)
 
-        // console.log(
-        //   pubList,
-        //   '!!!',
-        //   item,
-        //   pubList.splice(toPubListIndex, 0, item)
-        // )
         let TempList = pubList
         TempList.splice(toPubListIndex, 0, item)
+
         dispatch({ type: 'setColumns', newVal: TempData })
         dispatch({
           type: 'setPubList',
@@ -139,7 +130,6 @@ export default () => {
               }),
           },
         })
-        // console.log(TempData)
 
         TempData = update(TempData, {
           [toColumnIndex]: {
@@ -152,9 +142,10 @@ export default () => {
 
         dispatch({ type: 'setColumns', newVal: TempData })
       }
-    } else if (type === 'extra') {
-      console.log()
+    } else {
+      console.log('err!!! failed to drop or drag')
     }
+    setShowAddBtn(true)
   }
   // 横向滚动
   const handleScroll = (e: any, parser: any) => {
