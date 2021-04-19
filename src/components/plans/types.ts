@@ -6,7 +6,7 @@ export interface planListIF {
 }
 
 export interface planDetailIF {
-  id: number | string
+  id: number
   place: string[] // 地点数组，接收一个或两个地点(from to)
   mapPosition?: [any] //地图位置信息，数组
   actType?: string //活动类别
@@ -16,21 +16,7 @@ export interface planDetailIF {
 }
 
 export interface columnIF {
-  id: string | number
+  id: number
   title: string
   item: planDetailIF[]
-}
-
-export interface planColumnPropsIF {
-  columnIndex: number
-  column: planListIF
-  key: number
-  setInColumn: (type: boolean) => void
-}
-
-export interface planDetailPropsIF {
-  id: number | string
-  detailIndex: number
-  detail: planDetailIF
-  setInColumn?: (type: boolean) => void
 }

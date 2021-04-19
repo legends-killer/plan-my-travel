@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useContext } from 'react'
-import { planListIF, planDetailPropsIF, planDetailIF } from './types'
+import { planListIF, planDetailIF } from './types'
 import {
   DragDropContext,
   Droppable,
@@ -19,31 +19,32 @@ export default () => {
   const [isInColumn, setIsIncolumn] = useState(false)
   const [lock, setLock] = useState(false)
   const [showAddBtn, setShowAddBtn] = useState(true)
-  const setInColumn = (type: boolean) => {
-    console.log(type)
-    setIsIncolumn(type)
-  }
   const { state, dispatch } = useContext(PlanContext)
-  const { pubList, columns } = state
-  const addNewColumn = (id: number, title: string) => {
+  const { pubList, columns, nextPlanId, nextColumnId } = state
+
+  // console.log(columns, 'build')
+
+  // 新增一列，删除一列在column组件中进行
+  const addNewColumn = (title: string) => {
     let TempData = columns
     TempData.push({
-      id,
+      id: nextColumnId,
       title,
       details: [],
     } as planListIF)
     console.log('add')
     dispatch({ type: 'setColumns', newVal: TempData })
+    // column id 自增
+    dispatch({ type: 'setNextColumnId' })
   }
-
-  console.log(columns, 'build')
-
+  // 开始拖拽
   const onDragStart = (initial: DragStart) => {
-    console.log(initial)
+    // console.log(initial)
     setShowAddBtn(false)
   }
-
+  // 结束拖拽
   const onDragEnd = (result: DropResult) => {
+    console.log(pubList)
     setShowAddBtn(true)
     const { destination, source, type } = result
     if (!destination) {
@@ -57,37 +58,105 @@ export default () => {
       TempData.splice(to, 0, item[0])
       dispatch({ type: 'setColumns', newVal: TempData })
     } else if (type === 'row') {
-      const fromColumnIndex = Number(source.droppableId)
-      const fromIssueIndex = source.index
-      const toColumnIndex = Number(destination.droppableId)
-      const toIssueIndex = destination.index
-      const TempIssue = columns[fromColumnIndex].details[fromIssueIndex]
-      console.log(source, destination, TempIssue)
+      console.log(source, destination)
+      // from pubList
+      if (source.droppableId === 'pub-list') {
+        if (destination.droppableId !== 'pub-list') {
+          // pubList -> column
+          console.log('pubList -> column')
+          const toColumnId = Number(destination.droppableId) // column id
+          const toIssueIndex = destination.index // index in column
+          const tempIssue = pubList[source.index]
+          // 计算新的columns并更新context
+          let TempData = update(columns, {
+            [toColumnId]: {
+              details: (details) =>
+                update(details, {
+                  $splice: [[toIssueIndex, 0, tempIssue]],
+                }),
+            },
+          })
+          dispatch({ type: 'setColumns', newVal: TempData })
+          // 删除pubList对应项
+          let TempList = pubList
+          TempList.splice(source.index, 1)
+          dispatch({
+            type: 'setPubList',
+            newVal: TempList,
+          })
+        } else {
+          // pubList -> pubList
+          console.log('pubList -> pubList')
+          const fromIssueIndex = source.index
+          const toPubListIndex = destination.index
+          console.log(fromIssueIndex, toPubListIndex)
 
-      let TempData = update(columns, {
-        [fromColumnIndex]: {
-          details: (details) =>
-            update(details, {
-              $splice: [[fromIssueIndex, 1]],
-            }),
-        },
-      })
-      console.log(TempData)
+          // 计算新的pubList 更新context
+          let TempData = pubList
+          let item = TempData.splice(fromIssueIndex, 1)
+          TempData.splice(toPubListIndex, 0, item[0])
+          console.log(TempData)
+          dispatch({ type: 'setPubList', newVal: TempData })
+        }
+      } else if (destination.droppableId === 'pub-list') {
+        console.log('column -> pubList')
+        // column -> pubList
+        const fromColumnId = Number(source.droppableId)
+        const fromColumnIndex = source.index
+        const toPubListIndex = destination.index
+        // 计算新的columns 和 pubList 并设置
+        let TempData = columns
+        const item = TempData[fromColumnId].details[fromColumnIndex]
+        TempData[fromColumnId].details.splice(fromColumnIndex, 1)
 
-      TempData = update(TempData, {
-        [toColumnIndex]: {
-          details: (details) =>
-            update(details, {
-              $splice: [[toIssueIndex, 0, TempIssue]],
-            }),
-        },
-      })
+        // console.log(
+        //   pubList,
+        //   '!!!',
+        //   item,
+        //   pubList.splice(toPubListIndex, 0, item)
+        // )
+        let TempList = pubList
+        TempList.splice(toPubListIndex, 0, item)
+        dispatch({ type: 'setColumns', newVal: TempData })
+        dispatch({
+          type: 'setPubList',
+          newVal: TempList,
+        })
+      } else {
+        // column -> column
+        console.log('column -> column')
+        const fromColumnIndex = Number(source.droppableId)
+        const fromIssueIndex = source.index
+        const toColumnIndex = Number(destination.droppableId)
+        const toIssueIndex = destination.index
+        const TempIssue = columns[fromColumnIndex].details[fromIssueIndex]
 
-      dispatch({ type: 'setColumns', newVal: TempData })
+        let TempData = update(columns, {
+          [fromColumnIndex]: {
+            details: (details) =>
+              update(details, {
+                $splice: [[fromIssueIndex, 1]],
+              }),
+          },
+        })
+        // console.log(TempData)
+
+        TempData = update(TempData, {
+          [toColumnIndex]: {
+            details: (details) =>
+              update(details, {
+                $splice: [[toIssueIndex, 0, TempIssue]],
+              }),
+          },
+        })
+
+        dispatch({ type: 'setColumns', newVal: TempData })
+      }
     } else if (type === 'extra') {
+      console.log()
     }
   }
-
+  // 横向滚动
   const handleScroll = (e: any, parser: any) => {
     if (isInColumn) return
     if (lock) return
@@ -101,12 +170,17 @@ export default () => {
       -1,
       Math.min(1, e.nativeEvent.wheelDelta || -e.nativeEvent.detail)
     )
-    console.log(delta)
+    // console.log(delta)
     // if (!delta && os === 'Mac OS') return
-    console.log(e, delta)
+    // console.log(e, delta)
     e.currentTarget.scrollLeft -= delta * 150
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     e.preventDefault
+  }
+  // 控制是否为横向滚动
+  const setInColumn = (type: boolean) => {
+    // console.log(type)
+    setIsIncolumn(type)
   }
   return (
     <>
@@ -126,7 +200,7 @@ export default () => {
                       return (
                         <Column
                           columnIndex={index}
-                          key={Number(column.id)}
+                          key={column.id}
                           column={column}
                           setInColumn={setInColumn}
                         />
@@ -135,10 +209,7 @@ export default () => {
                     {showAddBtn && (
                       <Button
                         onClick={(e) => {
-                          addNewColumn(
-                            columns[columns.length - 1].id + 1,
-                            'aaa'
-                          )
+                          addNewColumn('aaa')
                         }}
                       >
                         add
@@ -150,20 +221,20 @@ export default () => {
               </UserAgent>
             )}
           </Droppable>
-          <Droppable droppableId="pub-list" type="list" direction="horizontal">
+          <Droppable droppableId="pub-list" type="row" direction="horizontal">
             {(provided) => (
               <div
                 className={'pubListContainer'}
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
-                {pubList.map((item, index) => {
+                {pubList.map((detail, index) => {
                   return (
                     <Detail
-                      detail={item}
-                      key={index}
+                      detail={detail}
+                      key={detail.id}
                       detailIndex={index}
-                      id={item.id}
+                      id={detail.id}
                     />
                   )
                 })}

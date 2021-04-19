@@ -14,27 +14,32 @@ const InitialPubList = [
     place: ['place'],
     actType: 'yyy',
   },
+  {
+    id: 2,
+    place: ['pub2'],
+    actType: 'aaa',
+  },
 ] as planDetailIF[]
 const InitialColumns = [
   {
-    id: 100,
+    id: 10000,
     title: 'day1',
     details: [
-      { id: 11, place: ['A'], actType: 'van' },
-      { id: 2, place: ['B'] },
-      { id: 3, place: ['A', 'B'] },
+      { id: 3, place: ['A'], actType: 'van' },
+      { id: 4, place: ['B'] },
+      { id: 5, place: ['A', 'B'] },
     ],
   },
   {
-    id: 200,
+    id: 10001,
     title: 'day2',
     details: [
-      { id: 4, place: ['C'] },
-      { id: 5, place: ['D'] },
+      { id: 6, place: ['C'] },
+      { id: 7, place: ['D'] },
     ],
   },
   {
-    id: 300,
+    id: 10002,
     title: 'day3',
     details: [],
   },
@@ -42,6 +47,8 @@ const InitialColumns = [
 const InitialPlanState = {
   pubList: InitialPubList,
   columns: InitialColumns,
+  nextColumnId: 10003,
+  nextPlanId: 8,
 } as PlanContextIF
 
 function App() {

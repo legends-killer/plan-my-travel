@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.6.2",
     "@craco/craco": "^6.1.1",
     "@quentin-sommer/react-useragent": "^3.1.0",
     "@tailwindcss/postcss7-compat": "^2.1.0",

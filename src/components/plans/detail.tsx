@@ -1,11 +1,18 @@
-import { planDetailPropsIF } from './types'
+import { planDetailIF } from './types'
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from 'react-beautiful-dnd'
 
-export default function Detail(props: planDetailPropsIF) {
+interface IProps {
+  id: number
+  detailIndex: number
+  detail: planDetailIF
+  setInColumn?: (type: boolean) => void
+}
+
+export default function Detail(props: IProps) {
   const { id, detailIndex, detail, setInColumn } = props
   return (
     <Draggable draggableId={`${id}`} index={detailIndex}>
