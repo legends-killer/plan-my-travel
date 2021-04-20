@@ -9,6 +9,7 @@ import {
 import update from 'immutability-helper'
 import Column from './column'
 import Detail from './detail'
+import PubList from './pub-list'
 import { Button, Input } from 'antd'
 import { PlanContext } from '../../utils'
 import { UserAgentProvider, UserAgent } from '@quentin-sommer/react-useragent'
@@ -212,27 +213,7 @@ export default () => {
               </UserAgent>
             )}
           </Droppable>
-          <Droppable droppableId="pub-list" type="row" direction="horizontal">
-            {(provided) => (
-              <div
-                className={'pubListContainer'}
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                {pubList.map((detail, index) => {
-                  return (
-                    <Detail
-                      detail={detail}
-                      key={detail.id}
-                      detailIndex={index}
-                      id={detail.id}
-                    />
-                  )
-                })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          <PubList />
         </DragDropContext>
       </UserAgentProvider>
     </>
