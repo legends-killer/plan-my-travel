@@ -4,9 +4,13 @@ import Plans from './pages/Plans'
 import About from './pages/About'
 import './App.less'
 import { useState, useReducer } from 'react'
-import { planDetailIF, planListIF } from './components/plans/types'
+import {
+  planDetailIF,
+  planListIF,
+  planContextIF,
+} from './components/plans/types'
 import Map from './pages/Map'
-import { PlanContext, PlanContextIF, reducer } from './utils'
+import { PlanContext, reducer } from './utils'
 
 const InitialPubList = [
   {
@@ -49,7 +53,7 @@ const InitialPlanState = {
   columns: InitialColumns,
   nextColumnId: 10003,
   nextPlanId: 8,
-} as PlanContextIF
+} as planContextIF
 
 function App() {
   const [state, dispatch] = useReducer(reducer, InitialPlanState)

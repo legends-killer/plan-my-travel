@@ -1,14 +1,12 @@
 import React from 'react'
-import { planDetailIF, planListIF } from './components/plans/types'
-export interface PlanContextIF {
-  columns: planListIF[]
-  pubList: planDetailIF[]
-  nextColumnId: number
-  nextPlanId: number
-}
+import {
+  planDetailIF,
+  planListIF,
+  planContextIF,
+} from './components/plans/types'
 
 export const PlanContext = React.createContext<{
-  state: PlanContextIF
+  state: planContextIF
   dispatch: (action: any) => void
 }>({
   state: { columns: [], pubList: [], nextColumnId: 10003, nextPlanId: 8 },
@@ -16,7 +14,7 @@ export const PlanContext = React.createContext<{
 })
 
 export const reducer = (
-  state: PlanContextIF,
+  state: planContextIF,
   action: { type: string; newVal?: any }
 ) => {
   switch (action.type) {

@@ -15,8 +15,9 @@ export interface planDetailIF {
   duration?: string //历时
 }
 
-export interface columnIF {
-  id: number
-  title: string
-  item: planDetailIF[]
+export interface planContextIF {
+  columns: planListIF[]
+  pubList: planDetailIF[]
+  nextColumnId: number
+  nextPlanId: number
 }
