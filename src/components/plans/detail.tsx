@@ -1,3 +1,4 @@
+import { useState, memo } from 'react'
 import { planDetailIF } from './types'
 import {
   Draggable,
@@ -7,13 +8,20 @@ import {
 
 interface IProps {
   id: number
-  detailIndex: number
+  colIndex?: number //所在column的位置
+  detailIndex: number //所在detail的位置
   detail: planDetailIF
   setInColumn?: (type: boolean) => void
+  showModify: (rowId: number, colId: number) => void
 }
 
-export default function Detail(props: IProps) {
-  const { id, detailIndex, detail, setInColumn } = props
+function areEqual(prevProps: any, nextProps: any) {
+  return JSON.stringify(prevProps) === JSON.stringify(nextProps)
+}
+
+export default memo(function Detail(props: IProps) {
+  const { id, detailIndex, detail, colIndex, setInColumn, showModify } = props
+  console.log('detail.tsx', colIndex)
   return (
     <Draggable draggableId={`${id}`} index={detailIndex}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
@@ -24,6 +32,10 @@ export default function Detail(props: IProps) {
           } panel `}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onClick={() => {
+            console.log('click', detailIndex)
+            showModify(detailIndex, colIndex as number)
+          }}
           onMouseEnter={() => {
             setInColumn && setInColumn(true)
           }}
@@ -47,4 +59,4 @@ export default function Detail(props: IProps) {
       )}
     </Draggable>
   )
-}
+}, areEqual)

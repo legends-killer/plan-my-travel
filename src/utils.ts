@@ -5,6 +5,8 @@ import {
   planContextIF,
 } from './components/plans/types'
 
+// Plan相关
+
 export const PlanContext = React.createContext<{
   state: planContextIF
   dispatch: (action: any) => void
@@ -38,5 +40,7 @@ export const reducer = (
       return state
   }
 }
+
+// Map相关
 
 export const MapContext = React.createContext<any>(null)

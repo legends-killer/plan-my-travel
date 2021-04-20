@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useState, useCallback, useContext, memo } from 'react'
 import { planListIF, planDetailIF } from './types'
 import {
   DragDropContext,
@@ -15,8 +15,13 @@ import { PlanContext } from '../../utils'
 import { UserAgentProvider, UserAgent } from '@quentin-sommer/react-useragent'
 import './style.less'
 
+function areEqual(prevProps: any, nextProps: any) {
+  return true
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default () => {
+export default memo((props: any) => {
+  console.log('index.tsx')
   const [isInColumn, setIsIncolumn] = useState(false)
   const [lock, setLock] = useState(false)
   const [showAddBtn, setShowAddBtn] = useState(true)
@@ -65,14 +70,10 @@ export default () => {
           const toIssueIndex = destination.index // index in column
           const tempIssue = pubList[source.index]
           // 计算新的columns并更新context
-          let TempData = update(columns, {
-            [toColumnId]: {
-              details: (details) =>
-                update(details, {
-                  $splice: [[toIssueIndex, 0, tempIssue]],
-                }),
-            },
-          })
+          let TempData = columns
+          let row = columns[toColumnId].details
+          row.splice(toIssueIndex, 0, tempIssue)
+          TempData[toColumnId].details = row
           dispatch({ type: 'setColumns', newVal: TempData })
           // 删除pubList对应项
           let TempList = pubList
@@ -218,4 +219,4 @@ export default () => {
       </UserAgentProvider>
     </>
   )
-}
+}, areEqual)
